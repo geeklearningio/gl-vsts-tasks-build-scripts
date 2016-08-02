@@ -37,11 +37,10 @@ var createExtensionTasks = configuration.environments.map((env) => {
     fs.writeJsonSync(extensionFilePath, extension);
 
     var patchTasks = tasks.getTasks(environmentTasksDirectory).map((taskDirectory) => {
-        var folderName = path.basename(taskDirectory.directory);
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
         var task = fs.readJsonSync(taskFilePath);
 
-        task.id = env.TaskIds[folderName];
+        task.id = env.TaskIds[taskDirectory.name];
         task.friendlyName += env.DisplayNamesSuffix;
                     
         task.version.Major = version.major;
@@ -60,13 +59,18 @@ var createExtensionTasks = configuration.environments.map((env) => {
 
     return (done) => {
         var child = exec(cmdline, { }, (error, stdout, stderr) => {
-            console.log(stdout);
-            console.error(stderr);
-            if (error !== null) {
-                console.log('exec error: ' + error);
+
+            if (error) {
+                console.error(`exec error: ${error}`);
+                done(error);
+                return;
             }
 
-            done(error);
+            console.log(`tfx extension create done for ${env.Name}`);
+            console.log(stdout);
+            console.log(stderr);
+
+            done();
         });
     };
 });
