@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "devDependencies": {
-    "fs-extra": "0.30.0"
+    "fs-extra": "0.30.0",
+    "lodash": "4.14.1"
   }
 }
