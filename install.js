@@ -2,7 +2,7 @@ var series = require("async/series");
 var tasks = require('./tasks.js');
 
 var npmInstall = (project) => {
-      return (done)=>{
+      return (done) => {
         var exec = require('child_process').exec;
 
         var child = exec('npm install', {
@@ -26,7 +26,7 @@ installTasks.push(npmInstall({
 }));
 
 series(installTasks, (err) => {
-    if (err){
+    if (err) {
         console.error("Failed to install child dependencies");
     }
 });

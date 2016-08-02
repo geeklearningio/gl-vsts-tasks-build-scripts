@@ -1,8 +1,13 @@
 var fs = require("fs");
 var path = require("path");
-var tasksRoot = "./Tasks";
 
-exports.getTasks = ()=> {
+exports.getTasks = (tasksRoot) => {
+
+    if (!tasksRoot) {
+        var currentDirectory = process.cwd();
+        var tasksRoot = path.join(currentDirectory, 'Tasks');
+    }
+
     var tasks = fs.readdirSync(tasksRoot);
     return tasks
         .map((task) => {
