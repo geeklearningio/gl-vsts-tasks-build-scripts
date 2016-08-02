@@ -8,34 +8,32 @@ var buildOutputDirectory = path.join(currentDirectory, '.BuildOutput');
 var extensionDirectory = path.join(currentDirectory, 'Extension');
 var tasksDirectory = path.join(currentDirectory, 'Tasks');
 
-// var getSemanticVersion = function(done) {
-//     var options = minimist(process.argv.slice(2), {});
-//     var version = options.version;
-//     if (!version) {
-//         done(new gutil.PluginError('PackageTask', 'supply version with --version'));
-//         return null;
-//     }
+var getSemanticVersion = function() {
+    var options = minimist(process.argv.slice(2), {});
+    var version = options.version;
+    if (!version) {
+        throw new Error('Package: supply version with --version');
+    }
 
-//     if (!semver.valid(version)) {
-//         done(new gutil.PluginError('PackageTask', 'invalid semver version: ' + version));
-//         return null;
-//     }   
+    if (!semver.valid(version)) {
+        throw new Error('Package: invalid semver version: ' + version);
+    }   
 
-//     var patch = semver.patch(version) * 1000;
-//     var prerelease = semver.prerelease(version);
-//     if (prerelease) {
-//         patch += prerelease[1];
-//     }
+    var patch = semver.patch(version) * 1000;
+    var prerelease = semver.prerelease(version);
+    if (prerelease) {
+        patch += prerelease[1];
+    }
 
-//     return {
-//         major: semver.major(version),
-//         minor: semver.minor(version),
-//         patch: patch,
-//         getVersionString: function() {
-//             return this.major.toString() + '.' + this.minor.toString() + '.' + this.patch.toString();
-//         }
-//     };
-// };
+    return {
+        major: semver.major(version),
+        minor: semver.minor(version),
+        patch: patch,
+        getVersionString: function() {
+            return this.major.toString() + '.' + this.minor.toString() + '.' + this.patch.toString();
+        }
+    };
+};
 
 
 // function (taskJson, encoding, done) {

@@ -2,9 +2,10 @@ var fs = require("fs-extra");
 var path = require("path");
 var collection = require('lodash/collection');
 
-var nodeCommonFilesRoot = "./Common/Node";
-var powershellCommonFilesRoot = "./Common/Powershell";
-var tasksRoot = "./Tasks";
+var currentDirectory = process.cwd();
+var nodeCommonFilesRoot = path.join(currentDirectory, 'Common', 'Node');
+var powershellCommonFilesRoot = path.join(currentDirectory, 'Common', 'PowerShell3');
+var tasksRoot = path.join(currentDirectory, 'Tasks');
 
 var tasks = fs.readdirSync(tasksRoot);
 var nodeFiles = fs.existsSync(nodeCommonFilesRoot) ? fs.readdirSync(nodeCommonFilesRoot) : [];
@@ -28,7 +29,7 @@ collection.forEach(tasks, (task) => {
         });
 
         collection.forEach(powershellFiles, (commonFile) => {
-            var targetFile = path.join(targetNodetargetPowershellCommonDir, commonFile);
+            var targetFile = path.join(targetPowershellCommonDir, commonFile);
             console.log(targetFile);
             fs.copySync(path.join(powershellCommonFilesRoot, commonFile), targetFile, { clobber: true });
         });
