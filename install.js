@@ -1,12 +1,12 @@
 var series = require("async/series");
 var tasks = require('./tasks.js');
 
-var installTasks = tasks.getTasks().map((task) =>{
-    return (done)=>{
+var npmInstall = (project) => {
+      return (done)=>{
         var exec = require('child_process').exec;
 
         var child = exec('npm install', {
-            cwd: task.directory
+            cwd: project.directory
         }, (error, stdout, stderr) => {
             console.log(stdout);
             console.error(stderr);
@@ -16,8 +16,14 @@ var installTasks = tasks.getTasks().map((task) =>{
             done(error);
         });
     };
-});
+}
 
+var installTasks = tasks.getTasks().map(npmInstall);
+
+installTasks.push(npmInstall({
+    directory: __dirname,
+    name: "BuildScripts"
+}));
 
 series(installTasks, (err) => {
     if (err){
