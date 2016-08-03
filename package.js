@@ -51,7 +51,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
 
         fs.writeJsonSync(taskFilePath, task);
 
-        var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase();
+        var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^[-]+/, "");
         extension.contributions.push({
             id: taskId + "-task",
             type: "ms.vss-distributed-task.task",
