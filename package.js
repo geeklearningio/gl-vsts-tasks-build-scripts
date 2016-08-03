@@ -33,8 +33,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
     extension.name += env.DisplayNamesSuffix;						
     extension.version = version.getVersionString();
     extension.galleryFlags = env.VssExtensionGalleryFlags;
-   
-    fs.writeJsonSync(extensionFilePath, extension);
+    extension.contributions = [];
 
     var patchTasks = tasks.getTasks(environmentTasksDirectory).map((taskDirectory) => {
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
@@ -51,7 +50,22 @@ var createExtensionTasks = configuration.environments.map((env) => {
         }
 
         fs.writeJsonSync(taskFilePath, task);
+
+        var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase();
+        extension.contributions.push({
+            id: taskId + "-task",
+            type: "ms.vss-distributed-task.task",
+            description: task.description,
+            targets: [
+                "ms.vss-distributed-task.tasks"
+            ],
+            properties: {
+                "name": "Tasks/" + taskDirectory.name
+            }
+        });
     });
+
+    fs.writeJsonSync(extensionFilePath, extension);
 
     var cmdline = 'tfx extension create --root "' + environmentDirectory
         + '" --manifest-globs "' + extensionFilePath
