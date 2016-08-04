@@ -58,5 +58,6 @@ installTasks.unshift(npmInstall({
 series(installTasks, (err) => {
     if (err) {
         console.error("Failed to install child dependencies");
+        throw err;
     }
 });

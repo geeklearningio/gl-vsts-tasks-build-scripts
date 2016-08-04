@@ -81,8 +81,14 @@ var createExtensionTasks = configuration.environments.map((env) => {
             }
 
             console.log(`tfx extension create done for ${env.Name}`);
-            console.log(stdout);
-            console.log(stderr);
+            
+            if (stdout) {
+                console.log(stdout);
+            }
+
+            if (stderr) {
+                console.error(stderr);
+            }
 
             done();
         });
@@ -92,5 +98,6 @@ var createExtensionTasks = configuration.environments.map((env) => {
 series(createExtensionTasks, (err) => {
     if (err) {
         console.error("Failed to create extensions.");
+        throw err;
     }
 });
