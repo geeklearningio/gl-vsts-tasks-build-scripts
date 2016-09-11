@@ -30,7 +30,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
     var extension = fs.readJsonSync(extensionFilePath);
 
     extension.id += env.VssExtensionIdSuffix;
-    extension.name += env.DisplayNamesSuffix;						
+    extension.name += env.DisplayNamesSuffix;
     extension.version = version.getVersionString();
     extension.galleryFlags = env.VssExtensionGalleryFlags;
     extension.contributions = [];
@@ -40,29 +40,31 @@ var createExtensionTasks = configuration.environments.map((env) => {
         var task = fs.readJsonSync(taskFilePath);
 
         task.id = env.TaskIds[taskDirectory.name];
-        task.friendlyName += env.DisplayNamesSuffix;
-                    
-        task.version.Major = version.major;
-        task.version.Minor = version.minor;
-        task.version.Patch = version.patch;
-        if (task.helpMarkDown) {
-            task.helpMarkDown = task.helpMarkDown.replace('#{Version}#', version.getVersionString());
-        }
+        if (task.id) {
+            task.friendlyName += env.DisplayNamesSuffix;
 
-        fs.writeJsonSync(taskFilePath, task);
-
-        var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^[-]+/, "");
-        extension.contributions.push({
-            id: taskId + "-task",
-            type: "ms.vss-distributed-task.task",
-            description: task.description,
-            targets: [
-                "ms.vss-distributed-task.tasks"
-            ],
-            properties: {
-                "name": "Tasks/" + taskDirectory.name
+            task.version.Major = version.major;
+            task.version.Minor = version.minor;
+            task.version.Patch = version.patch;
+            if (task.helpMarkDown) {
+                task.helpMarkDown = task.helpMarkDown.replace('#{Version}#', version.getVersionString());
             }
-        });
+
+            fs.writeJsonSync(taskFilePath, task);
+
+            var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^[-]+/, "");
+            extension.contributions.push({
+                id: taskId + "-task",
+                type: "ms.vss-distributed-task.task",
+                description: task.description,
+                targets: [
+                    "ms.vss-distributed-task.tasks"
+                ],
+                properties: {
+                    "name": "Tasks/" + taskDirectory.name
+                }
+            });
+        }
     });
 
     fs.writeJsonSync(extensionFilePath, extension);
@@ -72,7 +74,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
         + '" --output-path "' + environmentDirectory + '"';
 
     return (done) => {
-        var child = exec(cmdline, { }, (error, stdout, stderr) => {
+        var child = exec(cmdline, {}, (error, stdout, stderr) => {
 
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -81,7 +83,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
             }
 
             console.log(`tfx extension create done for ${env.Name}`);
-            
+
             if (stdout) {
                 console.log(stdout);
             }
