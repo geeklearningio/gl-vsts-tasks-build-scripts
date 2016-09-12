@@ -18,8 +18,11 @@ exports.getSemanticVersion = () => {
 
     var patch = semver.patch(version) * 1000;
     var prerelease = semver.prerelease(version);
-    if (prerelease) {
+    if (prerelease) {;
         patch += prerelease[1];
+    }
+    else {
+        patch += 999;
     }
 
     var result = {
