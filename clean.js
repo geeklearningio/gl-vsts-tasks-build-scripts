@@ -20,9 +20,9 @@ collection.forEach(tasks.getTasks(), (task) => {
     var taskNodeModules = path.join(task.directory, "node_modules");
     var targetPowershellCommonDir = path.join(task.directory, "ps_modules");
 
-    fs.emptyDirSync(targetNodeCommonDir);
-    fs.emptyDirSync(targetPowershellCommonDir);
+    fs.removeSync(targetNodeCommonDir);
+    fs.removeSync(targetPowershellCommonDir);
     if (options.modules == "true"){
-        fs.emptyDirSync(taskNodeModules);
+        fs.removeSync(taskNodeModules);
     };
 });

@@ -16,19 +16,25 @@ collection.forEach(tasks.getTasks(), (task) => {
     var taskNodeModules = path.join(task.directory, "node_modules");
     var targetPowershellCommonDir = path.join(task.directory, "ps_modules");
 
-    fs.ensureDirSync(targetNodeCommonDir);
-    fs.ensureDirSync(taskNodeModules);
-    fs.ensureDirSync(targetPowershellCommonDir);
+    var taskFilePath = path.join(task.directory, 'task.json');
+    var taskFile = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
 
-    collection.forEach(nodeFiles, (commonFile) => {
-        var targetFile = path.join(targetNodeCommonDir, commonFile);
-        console.log(targetFile);
-        fs.copySync(path.join(nodeCommonFilesRoot, commonFile), targetFile, { clobber: true });
-    });
+    if (taskFile.execution.Node) {
+        fs.ensureDirSync(targetNodeCommonDir);
+        fs.ensureDirSync(taskNodeModules);
+        collection.forEach(nodeFiles, (commonFile) => {
+            var targetFile = path.join(targetNodeCommonDir, commonFile);
+            console.log(targetFile);
+            fs.copySync(path.join(nodeCommonFilesRoot, commonFile), targetFile, { clobber: true });
+        });
+    }
 
-    collection.forEach(powershellFiles, (commonFile) => {
-        var targetFile = path.join(targetPowershellCommonDir, commonFile);
-        console.log(targetFile);
-        fs.copySync(path.join(powershellCommonFilesRoot, commonFile), targetFile, { clobber: true });
-    });
+    if (taskFile.execution.PowerShell3) {
+        fs.ensureDirSync(targetPowershellCommonDir);
+        collection.forEach(powershellFiles, (commonFile) => {
+            var targetFile = path.join(targetPowershellCommonDir, commonFile);
+            console.log(targetFile);
+            fs.copySync(path.join(powershellCommonFilesRoot, commonFile), targetFile, { clobber: true });
+        });
+    }
 });

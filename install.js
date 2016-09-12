@@ -29,17 +29,22 @@ var npmInstall = (project) => {
             var nodeModulesPath = path.join(project.directory, 'node_modules');
             var powerShellModules = require("glob").sync(path.join(project.directory, "node_modules", "**", "*.psm1"));
 
-            if (powerShellModules.length > 0) {
+            if (powerShellModules.length > 0) {  
                 var fs = require("fs-extra");
-                var psModulesPath = path.join(project.directory, 'ps_modules');
-                fs.ensureDirSync(psModulesPath);
-                
-                for (var i = 0; i < powerShellModules.length; i++) {
-                    var powerShellModulePath = powerShellModules[i];
-                    var powerShellModuleDirName = path.dirname(powerShellModulePath);
-                    var powerShellModuleFolderName = path.basename(powerShellModuleDirName);
-                    fs.copySync(powerShellModuleDirName, path.join(psModulesPath, powerShellModuleFolderName), { clobber: true, dereference: true });
-                    console.log(`${powerShellModuleFolderName} copied in ps_modules for ${project.name}`);
+                var taskFilePath = path.join(project.directory, 'task.json');
+                var task = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
+
+                if (task.execution.PowerShell3) {
+                    var psModulesPath = path.join(project.directory, 'ps_modules');
+                    fs.ensureDirSync(psModulesPath);
+                    
+                    for (var i = 0; i < powerShellModules.length; i++) {
+                        var powerShellModulePath = powerShellModules[i];
+                        var powerShellModuleDirName = path.dirname(powerShellModulePath);
+                        var powerShellModuleFolderName = path.basename(powerShellModuleDirName);
+                        fs.copySync(powerShellModuleDirName, path.join(psModulesPath, powerShellModuleFolderName), { clobber: true, dereference: true });
+                        console.log(`${powerShellModuleFolderName} copied in ps_modules for ${project.name}`);
+                    }
                 }
             }
 
