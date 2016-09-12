@@ -65,6 +65,9 @@ var createExtensionTasks = configuration.environments.map((env) => {
                 }
             });
         }
+        else {
+            fs.removeSync(taskDirectory.directory);
+        }
     });
 
     fs.writeJsonSync(extensionFilePath, extension);
