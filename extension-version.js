@@ -12,7 +12,7 @@ exports.getSemanticVersion = () => {
         console.log('Found version: ' + version);
     }
 
-    if (options.disable-version-transform){
+    if (options.noversiontransform){
         return version;
     }
 
