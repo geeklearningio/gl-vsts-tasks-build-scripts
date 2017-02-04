@@ -12,6 +12,10 @@ exports.getSemanticVersion = () => {
         console.log('Found version: ' + version);
     }
 
+    if (options.disable-version-transform){
+        return version;
+    }
+
     if (!semver.valid(version)) {
         throw new Error('Package: invalid semver version: ' + version);
     }
