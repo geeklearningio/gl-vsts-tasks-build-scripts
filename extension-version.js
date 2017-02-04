@@ -12,21 +12,20 @@ exports.getSemanticVersion = () => {
         console.log('Found version: ' + version);
     }
 
-    if (options.noversiontransform){
-        return version;
-    }
-
     if (!semver.valid(version)) {
         throw new Error('Package: invalid semver version: ' + version);
     }
 
     var patch = semver.patch(version) * 1000;
-    var prerelease = semver.prerelease(version);
-    if (prerelease) {;
-        patch += prerelease[1];
-    }
-    else {
-        patch += 999;
+
+    if (!noversiontransform){
+        var prerelease = semver.prerelease(version);
+        if (prerelease) {;
+            patch += prerelease[1];
+        }
+        else {
+            patch += 999;
+        }
     }
 
     var result = {
