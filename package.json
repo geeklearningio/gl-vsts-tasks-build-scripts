@@ -5,7 +5,7 @@
   "bin": {
     "vsts-build-tools-clean": "./run/vsts-build-tools-clean",
     "vsts-build-tools-install": "./run/vsts-build-tools-install",
-    "vsts-build-tools-node-modclean": "./run/vsts-build-tools-node-modeclean",
+    "vsts-build-tools-node-modclean": "./run/vsts-build-tools-node-modclean",
     "vsts-build-tools-package": "./run/vsts-build-tools-package",
     "vsts-build-tools-prebuild": "./run/vsts-build-tools-prebuild"
   },
