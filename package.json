@@ -5,6 +5,7 @@
   "bin": {
     "vsts-build-tools-clean": "./run/vsts-build-tools-clean",
     "vsts-build-tools-install": "./run/vsts-build-tools-install",
+    "vsts-build-tools-node-modclean": "./run/vsts-build-tools-node-modclean",
     "vsts-build-tools-package": "./run/vsts-build-tools-package",
     "vsts-build-tools-prebuild": "./run/vsts-build-tools-prebuild"
   },
@@ -20,6 +21,7 @@
     "jasmine": "2.4.1",
     "semver": "5.3.0",
     "tfx-cli": "0.3.23",
-    "glob": "7.0.5"
+    "glob": "7.0.5",
+    "modclean": "2.1.0"
   }
 }
