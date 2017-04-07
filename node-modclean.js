@@ -2,33 +2,27 @@ var tasks = require('./tasks.js');
 var series = require("async/series");
 var path = require("path");
 var fs = require("fs");
+const modclean = require('modclean');
 
 var runModclean = (project) => {
     return (done) => {
 
         if (fs.existsSync(path.join(project.directory, "node_modules"))) {
-            var exec = require('child_process').exec;
-            var child = exec('npm run modclean -r', {
+
+            modclean({
                 cwd: project.directory
-            }, (error, stdout, stderr) => {
-                if (error) {
+            }, function (err, results) {
+                // called once cleaning is complete.
+                if (err) {
                     console.error(`exec error: ${error}`);
                     done(error);
                     return;
                 }
 
-                console.log(`modclean done for ${project.name}`);
-
-                if (stdout) {
-                    console.log(stdout);
-                }
-
-                if (stderr) {
-                    console.error(stderr);
-                }
-
+                console.log(`${results.length} files removed!`);
                 done();
             });
+
         } else {
             console.log(`modclean skipped for ${project.name}`);
             done();
