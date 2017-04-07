@@ -1,3 +1,4 @@
+var minimist = require('minimist');
 var tasks = require('./tasks.js');
 var series = require("async/series");
 var path = require("path");
@@ -6,12 +7,27 @@ const modclean = require('modclean');
 
 var runModclean = (project) => {
     return (done) => {
-
         if (fs.existsSync(path.join(project.directory, "node_modules"))) {
 
-            modclean({
+            var modcleanOptions = {
                 cwd: project.directory
-            }, function (err, results) {
+            };
+
+            var options = minimist(process.argv.slice(2), {});
+
+            if (options.patterns) {
+                modcleanOptions.patterns = options.patterns.split(',');
+            }
+
+            if (options.additionalpatterns) {
+                modcleanOptions.additionalPatterns = options.additionalpatterns.split(',');
+            }
+
+            if (options.ignorepatterns) {
+                modcleanOptions.ignorePatterns = options.ignorepatterns.split(',');
+            }
+
+            modclean(modcleanOptions, function (err, results) {
                 // called once cleaning is complete.
                 if (err) {
                     console.error(`exec error: ${error}`);
