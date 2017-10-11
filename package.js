@@ -52,7 +52,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
 
             fs.writeJsonSync(taskFilePath, task);
 
-            var taskLocFilePath = path.join(taskDirectory.directory, 'task.json');
+            var taskLocFilePath = path.join(taskDirectory.directory, 'task.loc.json');
             if (fs.existsSync(taskLocFilePath)) {
                 var taskLoc = fs.readJsonSync(taskLocFilePath);
                 taskLoc.id = env.TaskIds[taskDirectory.name];
