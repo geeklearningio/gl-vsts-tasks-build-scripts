@@ -52,6 +52,36 @@ var createExtensionTasks = configuration.environments.map((env) => {
 
             fs.writeJsonSync(taskFilePath, task);
 
+            var taskLocFilePath = path.join(taskDirectory.directory, 'task.json');
+            if (fs.existsSync(taskLocFilePath)) {
+                var taskLoc = fs.readJsonSync(taskLocFilePath);
+                taskLoc.id = env.TaskIds[taskDirectory.name];
+                taskLoc.friendlyName += env.DisplayNamesSuffix;
+
+                taskLoc.version.Major = version.major;
+                taskLoc.version.Minor = version.minor;
+                taskLoc.version.Patch = version.patch;
+                if (taskLoc.helpMarkDown) {
+                    taskLoc.helpMarkDown = taskLoc.helpMarkDown.replace('#{Version}#', version.getVersionString());
+                }
+
+                var locfilesDirectory = path.join(taskDirectory.directory, 'Strings/resources.resjson');
+                if (fs.existsSync(locfilesDirectory)) {
+                    var langs = fs.readdirSync(locfilesDirectory);
+                    for (var index = 0; index < langs.length; index++) {
+                        var element = langs[index];
+                        var resourceFile = path.join(locfilesDirectory, element, "resources.resjson");
+                        if (fs.existsSync(resourceFile)){
+                            var resource = fs.readJsonSync(resourceFile);
+                            resource["loc.helpMarkDown"] = resource["loc.helpMarkDown"].replace('#{Version}#', version.getVersionString());
+                            fs.writeJsonSync(resourceFile, resource);
+                        }
+                    }
+                }
+            }
+
+
+
             var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^[-]+/, "");
             extension.contributions.push({
                 id: taskId + "-task",
