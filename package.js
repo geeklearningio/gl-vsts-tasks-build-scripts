@@ -65,6 +65,8 @@ var createExtensionTasks = configuration.environments.map((env) => {
                     taskLoc.helpMarkDown = taskLoc.helpMarkDown.replace('#{Version}#', version.getVersionString());
                 }
 
+                fs.writeJsonSync(taskLocFilePath, taskLoc);
+            
                 var locfilesDirectory = path.join(taskDirectory.directory, 'Strings/resources.resjson');
                 if (fs.existsSync(locfilesDirectory)) {
                     var langs = fs.readdirSync(locfilesDirectory);
