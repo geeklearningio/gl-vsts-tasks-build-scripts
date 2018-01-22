@@ -84,4 +84,5 @@ You can clean common files using `npm run clean`
 You can build node tasks using `npm run build`
 You can package your extension by running `npm run package`. Output will be placed in the `.BuildOutput` subdirectory at root.
 
-
+### Versioning
+You can set version by packaging with `npm run package -- --version <version>`
