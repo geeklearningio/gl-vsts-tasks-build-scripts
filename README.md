@@ -85,4 +85,5 @@ You can build node tasks using `npm run build`
 You can package your extension by running `npm run package`. Output will be placed in the `.BuildOutput` subdirectory at root.
 
 ### Versioning
-You can set version by packaging with `npm run package -- --version <version>`
+You can set version by packaging with `npm run package -- --version <version>`.
+You can disable the default behavior which would encode the semver metadata into the patch component with the additional flag `--noversiontransform`.
