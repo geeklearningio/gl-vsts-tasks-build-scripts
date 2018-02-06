@@ -16,9 +16,10 @@ exports.getSemanticVersion = () => {
         throw new Error('Package: invalid semver version: ' + version);
     }
 
-    var patch = semver.patch(version) * 1000;
+    var patch = semver.patch(version);
 
     if (!options.noversiontransform){
+        patch *= 1000;
         var prerelease = semver.prerelease(version);
         if (prerelease) {;
             patch += prerelease[1];
