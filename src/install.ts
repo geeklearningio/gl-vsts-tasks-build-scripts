@@ -58,11 +58,6 @@ var npmInstall = (project: ITask) => {
 
 var installTasks = getTasks().map(npmInstall);
 
-installTasks.unshift(npmInstall({
-    directory: __dirname,
-    name: "BuildScripts"
-}));
-
 series(installTasks, (err) => {
     if (err) {
         console.error("Failed to install child dependencies");
