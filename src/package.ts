@@ -1,11 +1,21 @@
-var path = require('path');
-var exec = require('child_process').exec;
+import * as  path from 'path';
+import { exec } from 'child_process';
+import * as  fs from 'fs-extra';
+import { series } from "async";
+import { getSemanticVersion } from './extension-version';
+import * as  tasks from './tasks';
 
-var fs = require('fs-extra');
-var series = require("async/series");
-
-var extensionVersion = require('./extension-version.js');
-var tasks = require('./tasks.js');
+export interface IConfiguration {
+    "environments": {
+        "Name": string;
+        "VssExtensionIdSuffix": string;
+        "VssExtensionGalleryFlags": ("Preview" | "Public")[];
+        "DisplayNamesSuffix": string;
+        "TaskIds": {
+            [key: string]: string;
+        };
+    }[];
+};
 
 var currentDirectory = process.cwd();
 var buildOutputDirectory = path.join(currentDirectory, '.BuildOutput');
@@ -14,17 +24,17 @@ var tasksDirectory = path.join(currentDirectory, 'Tasks');
 
 fs.ensureDirSync(buildOutputDirectory);
 
-var version = extensionVersion.getSemanticVersion();
+var version = getSemanticVersion();
 
-var configuration = require(path.join(currentDirectory, 'configuration.json'));
+var configuration = require(path.join(currentDirectory, 'configuration.json')) as IConfiguration;
 var createExtensionTasks = configuration.environments.map((env) => {
 
     var environmentDirectory = path.join(buildOutputDirectory, env.Name);
     var environmentTasksDirectory = path.join(environmentDirectory, 'Tasks');
     fs.ensureDirSync(environmentDirectory);
 
-    fs.copySync(extensionDirectory, environmentDirectory, { clobber: true, dereference: true });
-    fs.copySync(tasksDirectory, environmentTasksDirectory, { clobber: true, dereference: true });
+    fs.copySync(extensionDirectory, environmentDirectory, { overwrite: true, dereference: true });
+    fs.copySync(tasksDirectory, environmentTasksDirectory, { overwrite: true, dereference: true });
 
     var extensionFilePath = path.join(environmentDirectory, 'vss-extension.json');
     var extension = fs.readJsonSync(extensionFilePath);
@@ -33,7 +43,9 @@ var createExtensionTasks = configuration.environments.map((env) => {
     extension.name += env.DisplayNamesSuffix;
     extension.version = version.getVersionString();
     extension.galleryFlags = env.VssExtensionGalleryFlags;
-    extension.contributions = [];
+    if (extension.contributions === undefined) {
+        extension.contributions = [];
+    }
 
     var patchTasks = tasks.getTasks(environmentTasksDirectory).map((taskDirectory) => {
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
@@ -66,14 +78,13 @@ var createExtensionTasks = configuration.environments.map((env) => {
                 }
 
                 fs.writeJsonSync(taskLocFilePath, taskLoc);
-            
                 var locfilesDirectory = path.join(taskDirectory.directory, 'Strings/resources.resjson');
                 if (fs.existsSync(locfilesDirectory)) {
                     var langs = fs.readdirSync(locfilesDirectory);
                     for (var index = 0; index < langs.length; index++) {
                         var element = langs[index];
                         var resourceFile = path.join(locfilesDirectory, element, "resources.resjson");
-                        if (fs.existsSync(resourceFile)){
+                        if (fs.existsSync(resourceFile)) {
                             var resource = fs.readJsonSync(resourceFile);
                             resource["loc.helpMarkDown"] = resource["loc.helpMarkDown"].replace('#{Version}#', version.getVersionString());
                             fs.writeJsonSync(resourceFile, resource);
@@ -81,8 +92,6 @@ var createExtensionTasks = configuration.environments.map((env) => {
                     }
                 }
             }
-
-
 
             var taskId = taskDirectory.name.replace(/([A-Z])/g, '-$1').toLowerCase().replace(/^[-]+/, "");
             extension.contributions.push({
@@ -108,7 +117,7 @@ var createExtensionTasks = configuration.environments.map((env) => {
         + '" --manifest-globs "' + extensionFilePath
         + '" --output-path "' + environmentDirectory + '"';
 
-    return (done) => {
+    return (done: (err?: Error) => any) => {
         var child = exec(cmdline, {}, (error, stdout, stderr) => {
 
             if (error) {
