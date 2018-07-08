@@ -6,7 +6,9 @@ var child_process_1 = require("child_process");
 var tasks_1 = require("./tasks");
 var npmInstall = function (project) {
     return function (done) {
-        var child = child_process_1.exec('npm install', {
+        var isYarn = path.basename(process.env.npm_execpath || "npm").startsWith("yarn");
+        var installer = isYarn ? 'yarn' : 'npm';
+        var child = child_process_1.exec(isYarn ? 'yarn' : 'npm install', {
             cwd: project.directory
         }, function (error, stdout, stderr) {
             if (error) {
@@ -14,7 +16,7 @@ var npmInstall = function (project) {
                 done(error);
                 return;
             }
-            console.log("npm install done for " + project.name);
+            console.log(installer + " install done for " + project.name);
             if (stdout) {
                 console.log(stdout);
             }
