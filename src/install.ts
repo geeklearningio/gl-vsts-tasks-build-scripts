@@ -6,8 +6,11 @@ import { ITask, getTasks } from './tasks';
 
 var npmInstall = (project: ITask) => {
     return (done: Function) => {
+        const isYarn = path.basename(process.env.npm_execpath || "npm").startsWith("yarn")
 
-        var child = exec('npm install', {
+        var installer = isYarn ? 'yarn' : 'npm';
+
+        var child = exec(isYarn ? 'yarn' : 'npm install', {
             cwd: project.directory
         }, (error, stdout, stderr) => {
             if (error) {
@@ -16,7 +19,7 @@ var npmInstall = (project: ITask) => {
                 return;
             }
 
-            console.log(`npm install done for ${project.name}`);
+            console.log(`${installer} install done for ${project.name}`);
 
             if (stdout) {
                 console.log(stdout);
