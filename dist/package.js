@@ -26,7 +26,9 @@ var createExtensionTasks = configuration.environments.map(function (env) {
     extension.name += env.DisplayNamesSuffix;
     extension.version = version.getVersionString();
     extension.galleryFlags = env.VssExtensionGalleryFlags;
-    extension.contributions = [];
+    if (extension.contributions === undefined) {
+        extension.contributions = [];
+    }
     var patchTasks = tasks.getTasks(environmentTasksDirectory).map(function (taskDirectory) {
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
         var task = fs.readJsonSync(taskFilePath);

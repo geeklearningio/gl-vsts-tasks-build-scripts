@@ -43,7 +43,9 @@ var createExtensionTasks = configuration.environments.map((env) => {
     extension.name += env.DisplayNamesSuffix;
     extension.version = version.getVersionString();
     extension.galleryFlags = env.VssExtensionGalleryFlags;
-    extension.contributions = [];
+    if (extension.contributions === undefined) {
+        extension.contributions = [];
+    }
 
     var patchTasks = tasks.getTasks(environmentTasksDirectory).map((taskDirectory) => {
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
@@ -76,14 +78,14 @@ var createExtensionTasks = configuration.environments.map((env) => {
                 }
 
                 fs.writeJsonSync(taskLocFilePath, taskLoc);
-            
+
                 var locfilesDirectory = path.join(taskDirectory.directory, 'Strings/resources.resjson');
                 if (fs.existsSync(locfilesDirectory)) {
                     var langs = fs.readdirSync(locfilesDirectory);
                     for (var index = 0; index < langs.length; index++) {
                         var element = langs[index];
                         var resourceFile = path.join(locfilesDirectory, element, "resources.resjson");
-                        if (fs.existsSync(resourceFile)){
+                        if (fs.existsSync(resourceFile)) {
                             var resource = fs.readJsonSync(resourceFile);
                             resource["loc.helpMarkDown"] = resource["loc.helpMarkDown"].replace('#{Version}#', version.getVersionString());
                             fs.writeJsonSync(resourceFile, resource);
