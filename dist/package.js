@@ -5,15 +5,16 @@ var child_process_1 = require("child_process");
 var fs = require("fs-extra");
 var async_1 = require("async");
 var extension_version_1 = require("./extension-version");
-var tasks = require("./tasks");
-;
+var tasks_1 = require("./tasks");
+var configuration_1 = require("./configuration");
+var endpoints_1 = require("./endpoints");
 var currentDirectory = process.cwd();
 var buildOutputDirectory = path.join(currentDirectory, '.BuildOutput');
 var extensionDirectory = path.join(currentDirectory, 'Extension');
 var tasksDirectory = path.join(currentDirectory, 'Tasks');
 fs.ensureDirSync(buildOutputDirectory);
 var version = extension_version_1.getSemanticVersion();
-var configuration = require(path.join(currentDirectory, 'configuration.json'));
+var configuration = configuration_1.getConfiguration();
 var createExtensionTasks = configuration.environments.map(function (env) {
     var environmentDirectory = path.join(buildOutputDirectory, env.Name);
     var environmentTasksDirectory = path.join(environmentDirectory, 'Tasks');
@@ -29,17 +30,36 @@ var createExtensionTasks = configuration.environments.map(function (env) {
     if (extension.contributions === undefined) {
         extension.contributions = [];
     }
-    var patchTasks = tasks.getTasks(environmentTasksDirectory).map(function (taskDirectory) {
+    var endpointMap = {};
+    endpoints_1.getEndpoints().forEach(function (endpoint) {
+        endpointMap["connectedService:" + endpoint.name] = "connectedService:" + endpoint.name + env.VssExtensionIdSuffix;
+        var config = endpoint.manifest;
+        config.id = config.id + env.VssExtensionIdSuffix;
+        config.properties.name = endpoint.name + env.VssExtensionIdSuffix;
+        config.properties.displayName = config.properties.displayName + env.DisplayNamesSuffix;
+        extension.contributions.push(config);
+    });
+    tasks_1.getTasks(environmentTasksDirectory).map(function (taskDirectory) {
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
         var task = fs.readJsonSync(taskFilePath);
         task.id = env.TaskIds[taskDirectory.name];
         if (task.id) {
             task.friendlyName += env.DisplayNamesSuffix;
-            task.version.Major = version.major;
-            task.version.Minor = version.minor;
-            task.version.Patch = version.patch;
+            task.version = {
+                Major: version.major,
+                Minor: version.minor,
+                Patch: version.patch,
+            };
             if (task.helpMarkDown) {
                 task.helpMarkDown = task.helpMarkDown.replace('#{Version}#', version.getVersionString());
+            }
+            if (task.inputs) {
+                task.inputs.forEach(function (input) {
+                    var mappedType = endpointMap[input.type];
+                    if (mappedType) {
+                        input.type = mappedType;
+                    }
+                });
             }
             fs.writeJsonSync(taskFilePath, task);
             var taskLocFilePath = path.join(taskDirectory.directory, 'task.loc.json');

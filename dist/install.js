@@ -46,10 +46,6 @@ var npmInstall = function (project) {
     };
 };
 var installTasks = tasks_1.getTasks().map(npmInstall);
-installTasks.unshift(npmInstall({
-    directory: __dirname,
-    name: "BuildScripts"
-}));
 async_1.series(installTasks, function (err) {
     if (err) {
         console.error("Failed to install child dependencies");

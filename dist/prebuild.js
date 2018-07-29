@@ -4,10 +4,13 @@ var fs = require("fs-extra");
 var path = require("path");
 var tasks = require("./tasks");
 var lodash_1 = require("lodash");
+var configuration_1 = require("./configuration");
 var currentDirectory = process.cwd();
 var nodeCommonFilesRoot = path.join(currentDirectory, 'Common', 'Node');
 var powershellCommonFilesRoot = path.join(currentDirectory, 'Common', 'PowerShell3');
 var tasksRoot = path.join(currentDirectory, 'Tasks');
+var configuration = configuration_1.getConfiguration();
+var endpointsRoot = path.join(currentDirectory, 'Endpoints');
 var nodeFiles = fs.existsSync(nodeCommonFilesRoot) ? fs.readdirSync(nodeCommonFilesRoot) : [];
 var powershellFiles = fs.existsSync(powershellCommonFilesRoot) ? fs.readdirSync(powershellCommonFilesRoot) : [];
 lodash_1.forEach(tasks.getTasks(), function (task) {

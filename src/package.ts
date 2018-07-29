@@ -3,19 +3,10 @@ import { exec } from 'child_process';
 import * as  fs from 'fs-extra';
 import { series } from "async";
 import { getSemanticVersion } from './extension-version';
-import * as  tasks from './tasks';
-
-export interface IConfiguration {
-    "environments": {
-        "Name": string;
-        "VssExtensionIdSuffix": string;
-        "VssExtensionGalleryFlags": ("Preview" | "Public")[];
-        "DisplayNamesSuffix": string;
-        "TaskIds": {
-            [key: string]: string;
-        };
-    }[];
-};
+import { getTasks } from './tasks';
+import { getConfiguration } from './configuration';
+import { getEndpoints } from './endpoints';
+import { VstsTasksSchema } from './task';
 
 var currentDirectory = process.cwd();
 var buildOutputDirectory = path.join(currentDirectory, '.BuildOutput');
@@ -26,7 +17,7 @@ fs.ensureDirSync(buildOutputDirectory);
 
 var version = getSemanticVersion();
 
-var configuration = require(path.join(currentDirectory, 'configuration.json')) as IConfiguration;
+var configuration = getConfiguration();
 var createExtensionTasks = configuration.environments.map((env) => {
 
     var environmentDirectory = path.join(buildOutputDirectory, env.Name);
@@ -47,19 +38,42 @@ var createExtensionTasks = configuration.environments.map((env) => {
         extension.contributions = [];
     }
 
-    var patchTasks = tasks.getTasks(environmentTasksDirectory).map((taskDirectory) => {
+    let endpointMap: { [source: string]: string } = {};
+
+    getEndpoints().forEach(endpoint => {
+        endpointMap[`connectedService:${endpoint.name}`] = `connectedService:${endpoint.name}${env.VssExtensionIdSuffix}`;
+        var config = endpoint.manifest;
+        config.id = config.id + env.VssExtensionIdSuffix;
+        config.properties.name = endpoint.name + env.VssExtensionIdSuffix;
+        config.properties.displayName = config.properties.displayName + env.DisplayNamesSuffix;
+        extension.contributions.push(config);
+    });
+
+    getTasks(environmentTasksDirectory).map((taskDirectory) => {
         var taskFilePath = path.join(taskDirectory.directory, 'task.json');
-        var task = fs.readJsonSync(taskFilePath);
+        var task = fs.readJsonSync(taskFilePath) as VstsTasksSchema;
 
         task.id = env.TaskIds[taskDirectory.name];
         if (task.id) {
             task.friendlyName += env.DisplayNamesSuffix;
 
-            task.version.Major = version.major;
-            task.version.Minor = version.minor;
-            task.version.Patch = version.patch;
+            task.version = {
+                Major : version.major,
+                Minor : version.minor,
+                Patch : version.patch,
+            };
+
             if (task.helpMarkDown) {
                 task.helpMarkDown = task.helpMarkDown.replace('#{Version}#', version.getVersionString());
+            }
+
+            if (task.inputs) {
+                task.inputs.forEach((input) => {
+                    var mappedType = endpointMap[input.type];
+                    if (mappedType) {
+                        input.type = mappedType;
+                    }
+                });
             }
 
             fs.writeJsonSync(taskFilePath, task);
