@@ -1,23 +1,26 @@
-var series = require("async/series");
-var path = require("path");
+import { series } from "async";
+import * as path from "path";
+import { exec } from 'child_process';
 
-var tasks = require('./tasks.js');
+import { ITask, getTasks } from './tasks';
 
-var npmInstall = (project) => {
-      return (done) => {
-        var exec = require('child_process').exec;
+var npmInstall = (project: ITask) => {
+    return (done: Function) => {
+        const isYarn = path.basename(process.env.npm_execpath || "npm").startsWith("yarn")
 
-        var child = exec('npm install', {
+        var installer = isYarn ? 'yarn' : 'npm';
+
+        var child = exec(isYarn ? 'yarn' : 'npm install', {
             cwd: project.directory
         }, (error, stdout, stderr) => {
             if (error) {
-                console.error(`exec error: ${error}`);
+                console.error('execution error:', error);
                 done(error);
                 return;
             }
 
-            console.log(`npm install done for ${project.name}`);
-            
+            console.log(`${installer} install done for ${project.name}`);
+
             if (stdout) {
                 console.log(stdout);
             }
@@ -29,7 +32,7 @@ var npmInstall = (project) => {
             var nodeModulesPath = path.join(project.directory, 'node_modules');
             var powerShellModules = require("glob").sync(path.join(project.directory, "node_modules", "**", "*.psm1"));
 
-            if (powerShellModules.length > 0) {  
+            if (powerShellModules.length > 0) {
                 var fs = require("fs-extra");
                 var taskFilePath = path.join(project.directory, 'task.json');
                 var task = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
@@ -37,7 +40,7 @@ var npmInstall = (project) => {
                 if (task.execution.PowerShell3) {
                     var psModulesPath = path.join(project.directory, 'ps_modules');
                     fs.ensureDirSync(psModulesPath);
-                    
+
                     for (var i = 0; i < powerShellModules.length; i++) {
                         var powerShellModulePath = powerShellModules[i];
                         var powerShellModuleDirName = path.dirname(powerShellModulePath);
@@ -53,12 +56,7 @@ var npmInstall = (project) => {
     };
 }
 
-var installTasks = tasks.getTasks().map(npmInstall);
-
-installTasks.unshift(npmInstall({
-    directory: __dirname,
-    name: "BuildScripts"
-}));
+var installTasks = getTasks().map(npmInstall);
 
 series(installTasks, (err) => {
     if (err) {
