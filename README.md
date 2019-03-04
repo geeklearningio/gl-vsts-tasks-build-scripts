@@ -4,7 +4,7 @@
 [![NPM@dev](https://img.shields.io/npm/v/gl-vsts-tasks-build-scripts/dev.svg)](https://www.npmjs.com/package/gl-vsts-tasks-build-scripts/v/dev)
 [![NPM@latest](https://img.shields.io/npm/v/gl-vsts-tasks-build-scripts/latest.svg?color=green)](https://www.npmjs.com/package/gl-vsts-tasks-build-scripts/v/latest)
 
-This package provides npm utility commands to ease **Azure Pipelines Tasks** extensions developement.
+This package provides NPM utility commands to ease **Azure Pipelines Tasks** extensions developement.
 This currently powers the development process behind [Geek Learning's extensions](https://marketplace.visualstudio.com/publishers/geeklearningio).
 
 ## Features
