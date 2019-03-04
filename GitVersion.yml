@@ -1,9 +1,7 @@
 branches: 
-  dev(elop)?(ment)?$:
-    tag: alpha
-  features?[/-]:
+  feature:
+    regex: features?[/-]
     tag: alpha.{BranchName}
-  releases?[/-]:
-    mode: ContinuousDeployment
-  hotfix(es)?[/-]:
-    mode: ContinuousDeployment
+  develop:
+    regex: dev(elop)?(ment)?$
+    tag: alpha
