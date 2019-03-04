@@ -4,7 +4,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface VstsTasksSchema {
+export interface AzureDevOpsTasksSchema {
   /**
    * A unique guid for this task
    */
@@ -25,14 +25,28 @@ export interface VstsTasksSchema {
   author?: string;
   preview?: boolean;
   /**
+   * Task is deprecated only when the latest version is marked as deprecated. Deprecated tasks appear at the end of searches under a section that is collapsed by default.
+   */
+  deprecated?: boolean;
+  /**
    * Toggles showing the environment variable editor in the task editor UI. Allows passing environment variables to script based tasks.
    */
   showEnvironmentVariables?: boolean;
   runsOn?: ("Agent" | "MachineGroup" | "Server")[];
   /**
-   * Where the task appears in VSTS
+   * Where the task appears in Azure DevOps. Use the 'Azure *' categories for Azure DevOps and Azure DevOps Server 2019. Use the other categories for Team Foundation Server 2018 and below.
    */
-  category?: "Build" | "Utility" | "Test" | "Package" | "Deploy";
+  category?:
+    | "Build"
+    | "Utility"
+    | "Test"
+    | "Package"
+    | "Deploy"
+    | "Azure Repos"
+    | "Azure Boards"
+    | "Azure Pipelines"
+    | "Azure Test Plans"
+    | "Azure Artifacts";
   /**
    * Describes groups that task properties may be logically grouped by in the UI.
    */

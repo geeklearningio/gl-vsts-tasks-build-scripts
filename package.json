@@ -1,7 +1,7 @@
 {
   "name": "gl-vsts-tasks-build-scripts",
-  "private": false,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "This package provides NPM utility commands to ease Azure Pipelines Tasks extensions developement. This currently powers the development process behind Geek Learning's extensions.",
   "bin": {
     "vsts-build-tools-clean": "./run/vsts-build-tools-clean",
     "vsts-build-tools-install": "./run/vsts-build-tools-install",
@@ -13,27 +13,58 @@
     "build": "tsc",
     "schema:task": "json2ts --input tasks.schema.json --output src/task.d.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts"
+  },
+  "keywords": [
+    "Azure",
+    "DevOps",
+    "Pipelines",
+    "Tasks",
+    "VSTS",
+    "Build"
+  ],
+  "contributors": [
+    {
+      "name": "Geek Learning",
+      "url": "https://github.com/geeklearningio"
+    },
+    {
+      "name": "Cyprien Autexier",
+      "url": "https://github.com/sandorfr"
+    },
+    {
+      "name": "Adrien Siffermann",
+      "url": "https://github.com/asiffermann"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts/issues"
+  },
+  "homepage": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts",
   "devDependencies": {
     "jasmine": "^3.1.0",
     "json-schema-to-typescript": "^5.5.0",
-    "typescript": "2.9.2"
+    "tslint": "^5.13.1",
+    "typescript": "^3.3.1"
   },
   "dependencies": {
     "@types/async": "^2.0.49",
     "@types/fs-extra": "^5.0.4",
     "@types/lodash": "^4.14.110",
     "@types/minimist": "^1.2.0",
-    "@types/node": "^10.5.2",
+    "@types/node": "^11.10.4",
     "@types/semver": "^5.5.0",
-    "fs-extra": "6.0.1",
-    "lodash": "4.17.10",
-    "minimist": "1.2.0",
-    "modclean": "2.1.0",
-    "semver": "5.5.0",
-    "tfx-cli": "0.5.14",
-    "tsconfig-glob": "^0.4.3",
-    "tslint": "^5.10.0",
     "async": "^2.6.1",
-    "glob": "7.1.2"
+    "fs-extra": "^6.0.1",
+    "glob": "^7.1.3",
+    "lodash": "^4.17.11",
+    "minimist": "^1.2.0",
+    "modclean": "^2.1.2",
+    "semver": "^5.6.0",
+    "tfx-cli": "^0.6.4",
+    "tsconfig-glob": "^0.4.3"
   }
 }

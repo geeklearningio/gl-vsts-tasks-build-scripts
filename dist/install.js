@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var async_1 = require("async");
-var path = require("path");
 var child_process_1 = require("child_process");
+var path = require("path");
 var tasks_1 = require("./tasks");
 var npmInstall = function (project) {
     return function (done) {
         var isYarn = path.basename(process.env.npm_execpath || "npm").startsWith("yarn");
-        var installer = isYarn ? 'yarn' : 'npm';
-        var child = child_process_1.exec(isYarn ? 'yarn' : 'npm install', {
-            cwd: project.directory
+        var installer = isYarn ? "yarn" : "npm";
+        child_process_1.exec(isYarn ? "yarn" : "npm install", {
+            cwd: project.directory,
         }, function (error, stdout, stderr) {
             if (error) {
-                console.error('execution error:', error);
+                console.error("execution error:", error);
                 done(error);
                 return;
             }
@@ -23,18 +23,18 @@ var npmInstall = function (project) {
             if (stderr) {
                 console.error(stderr);
             }
-            var nodeModulesPath = path.join(project.directory, 'node_modules');
-            var powerShellModules = require("glob").sync(path.join(project.directory, "node_modules", "**", "*.psm1"));
+            var powerShellModules = require("glob")
+                .sync(path.join(project.directory, "node_modules", "**", "*.psm1"));
             if (powerShellModules.length > 0) {
                 var fs = require("fs-extra");
-                var taskFilePath = path.join(project.directory, 'task.json');
+                var taskFilePath = path.join(project.directory, "task.json");
                 var task = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
                 if (task.execution.PowerShell3) {
-                    var psModulesPath = path.join(project.directory, 'ps_modules');
+                    var psModulesPath = path.join(project.directory, "ps_modules");
                     fs.ensureDirSync(psModulesPath);
-                    for (var i = 0; i < powerShellModules.length; i++) {
-                        var powerShellModulePath = powerShellModules[i];
-                        var powerShellModuleDirName = path.dirname(powerShellModulePath);
+                    for (var _i = 0, powerShellModules_1 = powerShellModules; _i < powerShellModules_1.length; _i++) {
+                        var modulePath = powerShellModules_1[_i];
+                        var powerShellModuleDirName = path.dirname(modulePath);
                         var powerShellModuleFolderName = path.basename(powerShellModuleDirName);
                         fs.copySync(powerShellModuleDirName, path.join(psModulesPath, powerShellModuleFolderName), { clobber: true, dereference: true });
                         console.log(powerShellModuleFolderName + " copied in ps_modules for " + project.name);

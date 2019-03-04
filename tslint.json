@@ -1,0 +1,12 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "no-console": false
+    },
+    "linterOptions": {
+        "exclude": [
+            "run",
+            "dist"
+        ]
+    }
+}
