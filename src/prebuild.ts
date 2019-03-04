@@ -1,32 +1,28 @@
 import * as fs from "fs-extra";
+import { forEach } from "lodash";
 import * as path from "path";
-import * as tasks from './tasks';
-import { forEach } from 'lodash';
-import { getConfiguration } from './configuration';
+import * as tasks from "./tasks";
 
-var currentDirectory = process.cwd();
-var nodeCommonFilesRoot = path.join(currentDirectory, 'Common', 'Node');
-var powershellCommonFilesRoot = path.join(currentDirectory, 'Common', 'PowerShell3');
-var tasksRoot = path.join(currentDirectory, 'Tasks');
-var configuration = getConfiguration();
-var endpointsRoot = path.join(currentDirectory, 'Endpoints');
+const currentDirectory = process.cwd();
+const nodeCommonFilesRoot = path.join(currentDirectory, "Common", "Node");
+const powershellCommonFilesRoot = path.join(currentDirectory, "Common", "PowerShell3");
 
-var nodeFiles = fs.existsSync(nodeCommonFilesRoot) ? fs.readdirSync(nodeCommonFilesRoot) : [];
-var powershellFiles = fs.existsSync(powershellCommonFilesRoot) ? fs.readdirSync(powershellCommonFilesRoot) : [];
+const nodeFiles = fs.existsSync(nodeCommonFilesRoot) ? fs.readdirSync(nodeCommonFilesRoot) : [];
+const powershellFiles = fs.existsSync(powershellCommonFilesRoot) ? fs.readdirSync(powershellCommonFilesRoot) : [];
 
 forEach(tasks.getTasks(), (task) => {
-    var targetNodeCommonDir = path.join(task.directory, "common");
-    var taskNodeModules = path.join(task.directory, "node_modules");
-    var targetPowershellCommonDir = path.join(task.directory, "ps_modules");
+    const targetNodeCommonDir = path.join(task.directory, "common");
+    const taskNodeModules = path.join(task.directory, "node_modules");
+    const targetPowershellCommonDir = path.join(task.directory, "ps_modules");
 
-    var taskFilePath = path.join(task.directory, 'task.json');
-    var taskFile = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
+    const taskFilePath = path.join(task.directory, "task.json");
+    const taskFile = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
 
     if (taskFile.execution.Node) {
         fs.ensureDirSync(targetNodeCommonDir);
         fs.ensureDirSync(taskNodeModules);
         forEach(nodeFiles, (commonFile) => {
-            var targetFile = path.join(targetNodeCommonDir, commonFile);
+            const targetFile = path.join(targetNodeCommonDir, commonFile);
             console.log(targetFile);
             fs.copySync(path.join(nodeCommonFilesRoot, commonFile), targetFile, { overwrite: true });
         });
@@ -35,7 +31,7 @@ forEach(tasks.getTasks(), (task) => {
     if (taskFile.execution.PowerShell3) {
         fs.ensureDirSync(targetPowershellCommonDir);
         forEach(powershellFiles, (commonFile) => {
-            var targetFile = path.join(targetPowershellCommonDir, commonFile);
+            const targetFile = path.join(targetPowershellCommonDir, commonFile);
             console.log(targetFile);
             fs.copySync(path.join(powershellCommonFilesRoot, commonFile), targetFile, { overwrite: true });
         });

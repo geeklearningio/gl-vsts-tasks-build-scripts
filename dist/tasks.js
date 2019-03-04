@@ -5,7 +5,7 @@ var path = require("path");
 function getTasks(tasksRoot) {
     if (!tasksRoot) {
         var currentDirectory = process.cwd();
-        tasksRoot = path.join(currentDirectory, 'Tasks');
+        tasksRoot = path.join(currentDirectory, "Tasks");
     }
     var tasks = fs.readdirSync(tasksRoot);
     return tasks
@@ -13,7 +13,7 @@ function getTasks(tasksRoot) {
         var taskDir = path.join(tasksRoot, task);
         return {
             directory: taskDir,
-            name: task
+            name: task,
         };
     })
         .filter(function (task) { return fs.statSync(task.directory).isDirectory(); });

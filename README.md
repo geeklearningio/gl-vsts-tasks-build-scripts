@@ -1,7 +1,11 @@
 # gl-vsts-tasks-build
 
-This package provides npm utility commands to ease **VSTS Build And Release Tasks** extensions developement.
-This currently powers the development process behind [Geek Learning's VSTS extensions](https://marketplace.visualstudio.com/search?term=publisher%3A%22Geek%20Learning%22&target=VSTS&sortBy=Relevance).
+[![Build status](https://geeklearning.visualstudio.com/gl-github/_apis/build/status/gl-vsts-tasks-build-scripts)](https://geeklearning.visualstudio.com/gl-github/_build/latest?definitionId=97)
+[![NPM@dev](https://img.shields.io/npm/v/gl-vsts-tasks-build-scripts/dev.svg)](https://www.npmjs.com/package/gl-vsts-tasks-build-scripts/v/dev)
+[![NPM@latest](https://img.shields.io/npm/v/gl-vsts-tasks-build-scripts/latest.svg?color=green)](https://www.npmjs.com/package/gl-vsts-tasks-build-scripts/v/latest)
+
+This package provides npm utility commands to ease **Azure Pipelines Tasks** extensions developement.
+This currently powers the development process behind [Geek Learning's extensions](https://marketplace.visualstudio.com/publishers/geeklearningio).
 
 ## Features
 

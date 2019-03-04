@@ -1,20 +1,19 @@
 import { series } from "async";
+import { exec, ExecException } from "child_process";
 import * as path from "path";
-import { exec } from 'child_process';
+import { getTasks, ITask } from "./tasks";
 
-import { ITask, getTasks } from './tasks';
+const npmInstall = (project: ITask) => {
+    return (done: (error?: ExecException) => void) => {
+        const isYarn = path.basename(process.env.npm_execpath || "npm").startsWith("yarn");
 
-var npmInstall = (project: ITask) => {
-    return (done: Function) => {
-        const isYarn = path.basename(process.env.npm_execpath || "npm").startsWith("yarn")
+        const installer = isYarn ? "yarn" : "npm";
 
-        var installer = isYarn ? 'yarn' : 'npm';
-
-        var child = exec(isYarn ? 'yarn' : 'npm install', {
-            cwd: project.directory
+        exec(isYarn ? "yarn" : "npm install", {
+            cwd: project.directory,
         }, (error, stdout, stderr) => {
             if (error) {
-                console.error('execution error:', error);
+                console.error("execution error:", error);
                 done(error);
                 return;
             }
@@ -29,23 +28,24 @@ var npmInstall = (project: ITask) => {
                 console.error(stderr);
             }
 
-            var nodeModulesPath = path.join(project.directory, 'node_modules');
-            var powerShellModules = require("glob").sync(path.join(project.directory, "node_modules", "**", "*.psm1"));
+            const powerShellModules = require("glob")
+                .sync(path.join(project.directory, "node_modules", "**", "*.psm1"));
 
             if (powerShellModules.length > 0) {
-                var fs = require("fs-extra");
-                var taskFilePath = path.join(project.directory, 'task.json');
-                var task = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
+                const fs = require("fs-extra");
+                const taskFilePath = path.join(project.directory, "task.json");
+                const task = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
 
                 if (task.execution.PowerShell3) {
-                    var psModulesPath = path.join(project.directory, 'ps_modules');
+                    const psModulesPath = path.join(project.directory, "ps_modules");
                     fs.ensureDirSync(psModulesPath);
 
-                    for (var i = 0; i < powerShellModules.length; i++) {
-                        var powerShellModulePath = powerShellModules[i];
-                        var powerShellModuleDirName = path.dirname(powerShellModulePath);
-                        var powerShellModuleFolderName = path.basename(powerShellModuleDirName);
-                        fs.copySync(powerShellModuleDirName, path.join(psModulesPath, powerShellModuleFolderName), { clobber: true, dereference: true });
+                    for (const modulePath of powerShellModules) {
+                        const powerShellModuleDirName = path.dirname(modulePath);
+                        const powerShellModuleFolderName = path.basename(powerShellModuleDirName);
+                        fs.copySync(
+                            powerShellModuleDirName,
+                            path.join(psModulesPath, powerShellModuleFolderName), { clobber: true, dereference: true });
                         console.log(`${powerShellModuleFolderName} copied in ps_modules for ${project.name}`);
                     }
                 }
@@ -54,9 +54,9 @@ var npmInstall = (project: ITask) => {
             done();
         });
     };
-}
+};
 
-var installTasks = getTasks().map(npmInstall);
+const installTasks = getTasks().map(npmInstall);
 
 series(installTasks, (err) => {
     if (err) {

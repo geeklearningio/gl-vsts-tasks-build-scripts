@@ -1,26 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var minimist = require("minimist");
-var tasks = require("./tasks");
 var async_1 = require("async");
-var path = require("path");
 var fs = require("fs");
-var modclean = require('modclean');
+var minimist = require("minimist");
+var path = require("path");
+var tasks = require("./tasks");
+// tslint:disable-next-line: no-var-requires
+var modclean = require("modclean");
 var runModclean = function (project) {
     return function (done) {
         if (fs.existsSync(path.join(project.directory, "node_modules"))) {
             var modcleanOptions = {
-                cwd: project.directory
+                cwd: project.directory,
             };
             var options = minimist(process.argv.slice(2), {});
             if (options.patterns) {
-                modcleanOptions.patterns = options.patterns.split(',');
+                modcleanOptions.patterns = options.patterns.split(",");
             }
             if (options.additionalpatterns) {
-                modcleanOptions.additionalPatterns = options.additionalpatterns.split(',');
+                modcleanOptions.additionalPatterns = options.additionalpatterns.split(",");
             }
             if (options.ignorepatterns) {
-                modcleanOptions.ignorePatterns = options.ignorepatterns.split(',');
+                modcleanOptions.ignorePatterns = options.ignorepatterns.split(",");
             }
             modclean(modcleanOptions, function (err, results) {
                 // called once cleaning is complete.
