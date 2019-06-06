@@ -7,21 +7,20 @@ function getSemanticVersion() {
     var version = options.version;
     if (!version) {
         version = "0.0.0";
-        console.log('No version argument provided, fallback to default version: ' + version);
+        console.log("No version argument provided, fallback to default version: " + version);
     }
     else {
-        console.log('Found version: ' + version);
+        console.log("Found version: " + version);
     }
     if (!semver.valid(version)) {
-        throw new Error('Package: invalid semver version: ' + version);
+        throw new Error("Package: invalid semver version: " + version);
     }
     var patch = semver.patch(version);
     if (!options.noversiontransform) {
         patch *= 1000;
         var prerelease = semver.prerelease(version);
         if (prerelease) {
-            ;
-            patch += parseInt(prerelease[1]);
+            patch += parseInt(prerelease[1], 10);
         }
         else {
             patch += 999;
@@ -32,11 +31,10 @@ function getSemanticVersion() {
         minor: semver.minor(version),
         patch: patch,
         getVersionString: function () {
-            return this.major.toString() + '.' + this.minor.toString() + '.' + this.patch.toString();
-        }
+            return this.major.toString() + "." + this.minor.toString() + "." + this.patch.toString();
+        },
     };
-    console.log('Extension Version: ' + result.getVersionString());
+    console.log("Extension Version: " + result.getVersionString());
     return result;
 }
 exports.getSemanticVersion = getSemanticVersion;
-;

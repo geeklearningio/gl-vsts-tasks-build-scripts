@@ -9,17 +9,17 @@ export interface ITask {
 export function getTasks(tasksRoot?: string): ITask[] {
 
     if (!tasksRoot) {
-        var currentDirectory = process.cwd();
-        tasksRoot = path.join(currentDirectory, 'Tasks');
+        const currentDirectory = process.cwd();
+        tasksRoot = path.join(currentDirectory, "Tasks");
     }
 
-    var tasks = fs.readdirSync(tasksRoot);
+    const tasks = fs.readdirSync(tasksRoot);
     return tasks
         .map((task) => {
-            var taskDir = path.join(tasksRoot as string, task);
+            const taskDir = path.join(tasksRoot as string, task);
             return {
                 directory: taskDir,
-                name: task
+                name: task,
             };
         })
         .filter((task) => fs.statSync(task.directory).isDirectory());

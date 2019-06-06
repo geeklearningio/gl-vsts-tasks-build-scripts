@@ -1,7 +1,7 @@
 {
   "name": "gl-vsts-tasks-build-scripts",
-  "private": false,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "This package provides NPM utility commands to ease Azure Pipelines Tasks extensions developement. This currently powers the development process behind Geek Learning's extensions.",
   "bin": {
     "vsts-build-tools-clean": "./run/vsts-build-tools-clean",
     "vsts-build-tools-install": "./run/vsts-build-tools-install",
@@ -13,6 +13,37 @@
     "build": "tsc",
     "schema:task": "json2ts --input tasks.schema.json --output src/task.d.ts"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts"
+  },
+  "keywords": [
+    "Azure",
+    "DevOps",
+    "Pipelines",
+    "Tasks",
+    "VSTS",
+    "Build"
+  ],
+  "contributors": [
+    {
+      "name": "Geek Learning",
+      "url": "https://github.com/geeklearningio"
+    },
+    {
+      "name": "Cyprien Autexier",
+      "url": "https://github.com/sandorfr"
+    },
+    {
+      "name": "Adrien Siffermann",
+      "url": "https://github.com/asiffermann"
+    }
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts/issues"
+  },
+  "homepage": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts",
   "devDependencies": {
     "jasmine": "^3.4.0",
     "json-schema-to-typescript": "^6.1.3",

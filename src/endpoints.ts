@@ -1,5 +1,5 @@
-import * as path from "path";
 import * as fs from "fs-extra";
+import * as path from "path";
 
 export interface IEndpoint {
     path: string;
@@ -10,23 +10,22 @@ export interface IEndpoint {
 export function getEndpoints(endpointsRoot?: string): IEndpoint[] {
 
     if (!endpointsRoot) {
-        var currentDirectory = process.cwd();
-        endpointsRoot = path.join(currentDirectory, 'Endpoints');
+        const currentDirectory = process.cwd();
+        endpointsRoot = path.join(currentDirectory, "Endpoints");
     }
 
-    if (!fs.existsSync(endpointsRoot)){
+    if (!fs.existsSync(endpointsRoot)) {
         return [];
     }
 
-    return fs.readdirSync(endpointsRoot as string).map(file => {
+    return fs.readdirSync(endpointsRoot as string).map((file) => {
         const endpointPath = path.join(endpointsRoot as string, file);
-        const manifest = JSON.parse(fs.readFileSync(endpointPath, { encoding: 'utf8' }))
+        const manifest = JSON.parse(fs.readFileSync(endpointPath, { encoding: "utf8" }));
 
         return {
-            path: endpointPath,
+            manifest,
             name: manifest.properties.name,
-            manifest: manifest,
+            path: endpointPath,
         };
     });
-
 }
