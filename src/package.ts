@@ -56,6 +56,7 @@ const createExtensionTasks = configuration.environments.map((env) => {
 
         task.id = env.TaskIds[taskDirectory.name];
         if (task.id) {
+            task.name += env.VssExtensionIdSuffix;
             task.friendlyName += env.DisplayNamesSuffix;
 
             task.version = {
