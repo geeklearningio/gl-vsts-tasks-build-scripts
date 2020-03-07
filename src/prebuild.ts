@@ -18,7 +18,7 @@ forEach(tasks.getTasks(), (task) => {
     const taskFilePath = path.join(task.directory, "task.json");
     const taskFile = fs.existsSync(taskFilePath) ? fs.readJsonSync(taskFilePath) : {};
 
-    if (taskFile.execution.Node) {
+    if (taskFile.execution.Node || taskFile.execution.Node10) {
         fs.ensureDirSync(targetNodeCommonDir);
         fs.ensureDirSync(taskNodeModules);
         forEach(nodeFiles, (commonFile) => {
