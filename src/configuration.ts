@@ -1,12 +1,12 @@
-import * as  path from "path";
+import * as path from "path";
 
 export interface IConfiguration {
-    "environments": Array<{
-        "Name": string;
-        "VssExtensionIdSuffix": string;
-        "VssExtensionGalleryFlags": Array<("Preview" | "Public")>;
-        "DisplayNamesSuffix": string;
-        "TaskIds": {
+    environments: Array<{
+        Name: string;
+        VssExtensionIdSuffix: string;
+        VssExtensionGalleryFlags: Array<"Preview" | "Public">;
+        DisplayNamesSuffix: string;
+        TaskIds: {
             [key: string]: string;
         };
     }>;
