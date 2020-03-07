@@ -19,7 +19,8 @@
         "url": "https://github.com/geeklearningio/gl-vsts-tasks-build-scripts"
     },
     "files": [
-        "dist"
+        "dist",
+        "run"
     ],
     "keywords": [
         "Azure",
