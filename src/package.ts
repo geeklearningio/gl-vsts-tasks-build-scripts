@@ -1,7 +1,7 @@
 import { series } from "async";
 import { exec } from "child_process";
-import * as  fs from "fs-extra";
-import * as  path from "path";
+import * as fs from "fs-extra";
+import * as path from "path";
 import { getConfiguration } from "./configuration";
 import { getEndpoints } from "./endpoints";
 import { getSemanticVersion } from "./extension-version";
@@ -18,14 +18,19 @@ fs.ensureDirSync(buildOutputDirectory);
 const version = getSemanticVersion();
 
 const configuration = getConfiguration();
-const createExtensionTasks = configuration.environments.map((env) => {
-
+const createExtensionTasks = configuration.environments.map(env => {
     const environmentDirectory = path.join(buildOutputDirectory, env.Name);
     const environmentTasksDirectory = path.join(environmentDirectory, "Tasks");
     fs.ensureDirSync(environmentDirectory);
 
-    fs.copySync(extensionDirectory, environmentDirectory, { overwrite: true, dereference: true });
-    fs.copySync(tasksDirectory, environmentTasksDirectory, { overwrite: true, dereference: true });
+    fs.copySync(extensionDirectory, environmentDirectory, {
+        overwrite: true,
+        dereference: true,
+    });
+    fs.copySync(tasksDirectory, environmentTasksDirectory, {
+        overwrite: true,
+        dereference: true,
+    });
 
     const extensionFilePath = path.join(environmentDirectory, "vss-extension.json");
     const extension = fs.readJsonSync(extensionFilePath);
@@ -40,9 +45,10 @@ const createExtensionTasks = configuration.environments.map((env) => {
 
     const endpointMap: { [source: string]: string } = {};
 
-    getEndpoints().forEach((endpoint) => {
-        endpointMap[`connectedService:${endpoint.name}`]
-            = `connectedService:${endpoint.name}${env.VssExtensionIdSuffix}`;
+    getEndpoints().forEach(endpoint => {
+        endpointMap[
+            `connectedService:${endpoint.name}`
+        ] = `connectedService:${endpoint.name}${env.VssExtensionIdSuffix}`;
         const config = endpoint.manifest;
         config.id = config.id + env.VssExtensionIdSuffix;
         config.properties.name = endpoint.name + env.VssExtensionIdSuffix;
@@ -50,7 +56,7 @@ const createExtensionTasks = configuration.environments.map((env) => {
         extension.contributions.push(config);
     });
 
-    getTasks(environmentTasksDirectory).map((taskDirectory) => {
+    getTasks(environmentTasksDirectory).map(taskDirectory => {
         const taskFilePath = path.join(taskDirectory.directory, "task.json");
         const task = fs.readJsonSync(taskFilePath) as AzureDevOpsTasksSchema;
 
@@ -69,7 +75,7 @@ const createExtensionTasks = configuration.environments.map((env) => {
             }
 
             if (task.inputs) {
-                task.inputs.forEach((input) => {
+                task.inputs.forEach(input => {
                     const mappedType = endpointMap[input.type];
                     if (mappedType) {
                         input.type = mappedType;
@@ -100,24 +106,27 @@ const createExtensionTasks = configuration.environments.map((env) => {
                         const resourceFile = path.join(locfilesDirectory, element, "resources.resjson");
                         if (fs.existsSync(resourceFile)) {
                             const resource = fs.readJsonSync(resourceFile);
-                            resource["loc.helpMarkDown"] = resource["loc.helpMarkDown"]
-                                .replace("#{Version}#", version.getVersionString());
+                            resource["loc.helpMarkDown"] = resource["loc.helpMarkDown"].replace(
+                                "#{Version}#",
+                                version.getVersionString(),
+                            );
                             fs.writeJsonSync(resourceFile, resource);
                         }
                     }
                 }
             }
 
-            const taskId = taskDirectory.name.replace(/([A-Z])/g, "-$1").toLowerCase().replace(/^[-]+/, "");
+            const taskId = taskDirectory.name
+                .replace(/([A-Z])/g, "-$1")
+                .toLowerCase()
+                .replace(/^[-]+/, "");
             extension.contributions.push({
                 description: task.description,
                 id: taskId + "-task",
                 properties: {
                     name: "Tasks/" + taskDirectory.name,
                 },
-                targets: [
-                    "ms.vss-distributed-task.tasks",
-                ],
+                targets: ["ms.vss-distributed-task.tasks"],
                 type: "ms.vss-distributed-task.task",
             });
         } else {
@@ -127,13 +136,17 @@ const createExtensionTasks = configuration.environments.map((env) => {
 
     fs.writeJsonSync(extensionFilePath, extension);
 
-    const cmdline = 'tfx extension create --root "' + environmentDirectory
-        + '" --manifest-globs "' + extensionFilePath
-        + '" --output-path "' + environmentDirectory + '"';
+    const cmdline =
+        'tfx extension create --root "' +
+        environmentDirectory +
+        '" --manifest-globs "' +
+        extensionFilePath +
+        '" --output-path "' +
+        environmentDirectory +
+        '"';
 
-    return (done: (err?: Error) => any) => {
+    return (done: (err?: Error) => void): void => {
         exec(cmdline, {}, (error, stdout, stderr) => {
-
             if (error) {
                 console.error(`exec error: ${error}`);
                 done(error);
@@ -155,7 +168,7 @@ const createExtensionTasks = configuration.environments.map((env) => {
     };
 });
 
-series(createExtensionTasks, (err) => {
+series(createExtensionTasks, err => {
     if (err) {
         console.error("Failed to create extensions.");
         throw err;

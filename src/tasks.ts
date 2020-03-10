@@ -7,7 +7,6 @@ export interface ITask {
 }
 
 export function getTasks(tasksRoot?: string): ITask[] {
-
     if (!tasksRoot) {
         const currentDirectory = process.cwd();
         tasksRoot = path.join(currentDirectory, "Tasks");
@@ -15,12 +14,12 @@ export function getTasks(tasksRoot?: string): ITask[] {
 
     const tasks = fs.readdirSync(tasksRoot);
     return tasks
-        .map((task) => {
+        .map(task => {
             const taskDir = path.join(tasksRoot as string, task);
             return {
                 directory: taskDir,
                 name: task,
             };
         })
-        .filter((task) => fs.statSync(task.directory).isDirectory());
+        .filter(task => fs.statSync(task.directory).isDirectory());
 }

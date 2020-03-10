@@ -4,14 +4,20 @@ import * as minimist from "minimist";
 import * as path from "path";
 import * as tasks from "./tasks";
 
-// tslint:disable-next-line: no-var-requires
+// eslint-disable-next-line
 const modclean = require("modclean");
 
-const runModclean = (project: tasks.ITask) => {
-    return (done: (err?: Error) => any) => {
-        if (fs.existsSync(path.join(project.directory, "node_modules"))) {
+type ModCleanOptions = {
+    cwd?: string;
+    patterns?: string[];
+    additionalPatterns?: string[];
+    ignorePatterns?: string[];
+};
 
-            const modcleanOptions: any = {
+const runModclean = (project: tasks.ITask) => {
+    return (done: (err?: Error) => void): void => {
+        if (fs.existsSync(path.join(project.directory, "node_modules"))) {
+            const modcleanOptions: ModCleanOptions = {
                 cwd: project.directory,
             };
 
@@ -40,7 +46,6 @@ const runModclean = (project: tasks.ITask) => {
                 console.log(`${results.length} files removed!`);
                 done();
             });
-
         } else {
             console.log(`modclean skipped for ${project.name}`);
             done();
@@ -50,7 +55,7 @@ const runModclean = (project: tasks.ITask) => {
 
 const cleanTasks = tasks.getTasks().map(runModclean);
 
-series(cleanTasks, (err) => {
+series(cleanTasks, err => {
     if (err) {
         console.error("Failed to run  modclean");
         throw err;

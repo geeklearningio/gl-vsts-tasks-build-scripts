@@ -7,7 +7,7 @@ import tasks = require("./tasks");
 const options = minimist(process.argv.slice(2), {});
 fs.emptyDirSync(".BuildOutput");
 
-forEach(tasks.getTasks(options.taskroot as string | undefined), (task) => {
+forEach(tasks.getTasks(options.taskroot as string | undefined), task => {
     const targetNodeCommonDir = path.join(task.directory, "common");
     const taskNodeModules = path.join(task.directory, "node_modules");
     const targetPowershellCommonDir = path.join(task.directory, "ps_modules");
