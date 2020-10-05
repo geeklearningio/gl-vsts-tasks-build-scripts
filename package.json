@@ -10,7 +10,7 @@
         "vsts-build-tools-prebuild": "./run/vsts-build-tools-prebuild"
     },
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --newLine lf",
         "lint": "eslint src/**/*.ts",
         "schema:task": "json2ts --input tasks.schema.json --output src/task.d.ts"
     },
